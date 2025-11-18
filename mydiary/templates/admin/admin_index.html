@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="max-w-6xl mx-auto px-4 py-10">
+  <h2 class="text-3xl font-extrabold">Admin</h2>
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg p-4 shadow">
+      <h3 class="font-semibold">Recent users</h3>
+      <div class="mt-2 space-y-2">
+        {% for u in users %}
+        <div class="p-2 border rounded flex items-center justify-between">
+          <div>
+            <div class="font-semibold">@{{ u.username }}</div>
+            <div class="text-xs text-slate-500">{{ u.email }}</div>
+          </div>
+          <div class="text-sm text-slate-400">{{ u.created_at.strftime('%b %d') }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="bg-white rounded-lg p-4 shadow">
+      <h3 class="font-semibold">Flagged messages</h3>
+      <div class="mt-2 space-y-2">
+        {% for m in flagged %}
+        <div class="p-2 border rounded">
+          <div class="text-xs text-slate-500">@{{ m.recipient.username }} — {{ m.created_at.strftime('%b %d') }}</div>
+          <div>{{ m.content }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+/* small custom overrides and funness */
+html,body { height:100%; }
+h1, h2, h3, h4, h5 { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+.bg-emoji {
+  background-image: radial-gradient(circle at 10% 10%, rgba(255,105,180,0.06), transparent 10%),
+                    radial-gradient(circle at 90% 90%, rgba(255,165,0,0.05), transparent 10%);
+}
+/* tiny floating animation for decorative elements */
+.floaty { animation: floaty 6s ease-in-out infinite; }
+@keyframes floaty {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px) rotate(-1deg); }
+  100% { transform: translateY(0px); }
+}

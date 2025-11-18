@@ -1,0 +1,14 @@
+<div class="bg-white p-3 rounded-lg shadow" id="msg-{{ msg.id }}">
+  <div class="flex items-start gap-3">
+    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">👤</div>
+    <div class="flex-1">
+      <div class="text-sm text-slate-600">{{ msg.category }}</div>
+      <div class="mt-1 text-sm text-slate-800">{{ msg.content }}</div>
+      <div class="mt-2 text-xs text-slate-400 flex gap-3">
+        <span>{{ msg.created_at.strftime('%b %d %H:%M') }}</span>
+        <button hx-post="{{ url_for('inbox.toggle_read', msg_id=msg.id) }}" class="underline text-xs">toggle read</button>
+        <button hx-post="{{ url_for('inbox.flag_message', msg_id=msg.id) }}" class="underline text-xs">flag</button>
+      </div>
+    </div>
+  </div>
+</div>
