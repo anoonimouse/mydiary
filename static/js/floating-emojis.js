@@ -1,0 +1,1 @@
+<content of floating-emojis.js>
