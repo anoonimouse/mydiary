@@ -1,0 +1,40 @@
+/* Cyberpop Theme - Neon and Futuristic */
+:root {
+    --primary: #00FF41;
+    --secondary: #FF00FF;
+    --accent: #00FFFF;
+    --bg-gradient-start: #00FF41;
+    --bg-gradient-end: #FF00FF;
+}
+
+.theme-cyberpop .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end), #00FFFF);
+}
+
+.theme-cyberpop .from-hot-pink {
+    --tw-gradient-from: #FF00FF;
+}
+
+.theme-cyberpop .to-vibrant-orange {
+    --tw-gradient-to: #00FF41;
+}
+
+.theme-cyberpop .text-hot-pink {
+    color: #FF00FF;
+}
+
+.theme-cyberpop .bg-hot-pink {
+    background-color: #FF00FF;
+}
+
+.theme-cyberpop .border-hot-pink {
+    border-color: #FF00FF;
+}
+
+.theme-cyberpop .text-vibrant-orange {
+    color: #00FF41;
+}
+
+.theme-cyberpop .bg-vibrant-orange {
+    background-color: #00FF41;
+}

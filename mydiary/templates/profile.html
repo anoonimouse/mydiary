@@ -1,68 +1,124 @@
 {% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Diary - mydiary.page{% endblock %}
+
 {% block content %}
-<section class="max-w-4xl mx-auto px-4 py-10">
-  <div class="flex items-start gap-6">
-    <div class="w-full">
-      <div class="bg-white rounded-2xl shadow p-6">
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 to-orange-400 flex items-center justify-center text-white font-bold text-xl">@{{ user.username[:1].upper() }}</div>
-          <div>
-            <h1 class="text-2xl font-extrabold">@{{ user.username }}</h1>
-            <p class="text-sm text-slate-600 mt-1">{{ user.bio }}</p>
-          </div>
+<div class="min-h-screen bg-gradient-to-br from-hot-pink via-vibrant-orange to-coral py-8 px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Profile Card -->
+    <div
+      class="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8 transform hover:scale-[1.01] transition-transform duration-500">
+      <div class="bg-dark-black p-8 text-center relative overflow-hidden">
+        <div
+          class="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=')]">
         </div>
 
-        <div class="mt-6">
-          <h3 class="font-semibold">Send an anonymous message</h3>
-          <form id="sendMessageForm" hx-post="{{ url_for('inbox.send_message', username=user.username) }}" hx-target="#messagesList" hx-swap="afterbegin">
-            <textarea name="content" rows="3" placeholder="Be kind. Be honest." class="w-full mt-3 p-3 rounded-lg border"></textarea>
-            <div class="flex items-center gap-3 mt-3">
-              <select name="category" class="rounded px-3 py-2 border">
-                <option value="general">general</option>
-                <option value="compliment">compliment</option>
-                <option value="confession">confession</option>
-                <option value="roast">roast</option>
-              </select>
-              <button type="submit" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-orange-400 text-white rounded-full">Send</button>
-              <div class="ml-auto">
-                <button type="button" class="px-3 py-2 border rounded" onclick="copyLink()">Copy link</button>
-                <button type="button" class="px-3 py-2 border rounded" onclick="generateQR('{{ url_for('diary.profile', username=user.username, _external=True) }}')">QR</button>
-              </div>
-            </div>
-          </form>
-
-          <div id="messagesList" class="mt-6 space-y-3">
-            {% for m in user.messages.order_by(AnonymousMessage.created_at.desc()).limit(20) %}
-              {% include "components/message_card.html" with context %}
-            {% endfor %}
+        <div class="w-24 h-24 bg-gradient-to-r from-hot-pink to-vibrant-orange rounded-full mx-auto mb-4 p-1">
+          <div class="w-full h-full bg-dark-black rounded-full flex items-center justify-center text-4xl">
+            👻
           </div>
         </div>
+        <h1 class="font-display font-black text-4xl text-white mb-2">@{{ user.username }}</h1>
+        <p class="text-gray-400 text-lg">{{ user.bio or "Just living the vibe. Send me anonymous messages!" }}</p>
+
+        <!-- Share Button -->
+        <button onclick="shareProfile()"
+          class="mt-4 bg-white text-dark-black px-6 py-2.5 rounded-full font-bold hover:bg-gray-200 transition-colors inline-flex items-center gap-2">
+          <span>📤</span> Share Profile
+        </button>
       </div>
 
-      <!-- Public entries -->
-      <div class="mt-6">
-        <h4 class="text-lg font-bold">Public entries</h4>
-        <div class="mt-3 space-y-4">
-          {% for e in entries %}
-          <div class="bg-white rounded-lg p-4 shadow">
-            <div class="text-sm text-slate-500">{{ e.created_at.strftime('%b %d, %Y') }}</div>
-            <h5 class="font-semibold mt-2">{{ e.title }}</h5>
-            <p class="mt-2 text-sm text-slate-700">{{ e.body[:250] }}</p>
+      <div class="p-8">
+        <h2 class="font-display font-bold text-2xl text-dark-black mb-6 text-center">Send me a message...</h2>
+
+        <!-- Message Form -->
+        <form hx-post="{{ url_for('inbox.send_message', username=user.username) }}" hx-swap="outerHTML"
+          class="space-y-6">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value="text" class="peer sr-only" checked>
+              <div
+                class="bg-gray-100 peer-checked:bg-dark-black peer-checked:text-white py-3 rounded-xl text-center font-bold transition-colors text-sm">
+                💬 Message
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value="confession" class="peer sr-only">
+              <div
+                class="bg-gray-100 peer-checked:bg-hot-pink peer-checked:text-white py-3 rounded-xl text-center font-bold transition-colors text-sm">
+                🤫 Confession
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value="roast" class="peer sr-only">
+              <div
+                class="bg-gray-100 peer-checked:bg-vibrant-orange peer-checked:text-white py-3 rounded-xl text-center font-bold transition-colors text-sm">
+                🔥 Roast
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="category" value="3words" class="peer sr-only">
+              <div
+                class="bg-gray-100 peer-checked:bg-teal-accent peer-checked:text-white py-3 rounded-xl text-center font-bold transition-colors text-sm">
+                🦄 3 Words
+              </div>
+            </label>
           </div>
-          {% endfor %}
-        </div>
+
+          <textarea name="content" required rows="4"
+            class="w-full bg-gray-50 border-2 border-gray-300 focus:border-dark-black text-dark-black rounded-2xl p-4 text-lg font-display placeholder-gray-500 focus:outline-none resize-none"
+            placeholder="Type something anonymous..."></textarea>
+
+          <button type="submit"
+            class="w-full bg-dark-black text-white font-display font-bold text-xl py-4 rounded-2xl hover:scale-[1.02] transition-transform shadow-lg">
+            Send It
+          </button>
+        </form>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- QR modal -->
-<div id="qrModal" class="hidden fixed inset-0 bg-black/50 items-center justify-center">
-  <div class="bg-white p-6 rounded-lg">
-    <div id="qrCanvas"></div>
-    <div class="mt-4 text-right">
-      <button class="px-4 py-2 bg-slate-800 text-white rounded" onclick="closeQR()">Close</button>
+    <!-- Public Diary Entries -->
+    {% if entries %}
+    <div class="space-y-6">
+      <h3 class="font-display font-bold text-2xl text-white text-center mb-6">Public Diary</h3>
+      {% for entry in entries %}
+      <div class="bg-white p-6 rounded-3xl shadow-lg transform rotate-1 hover:rotate-0 transition-transform">
+        <p class="text-gray-500 text-sm mb-2">{{ entry.created_at.strftime('%b %d, %Y') }}</p>
+        <p class="font-display text-xl text-dark-black">{{ entry.content }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-12">
+      <a href="{{ url_for('main.index') }}"
+        class="inline-block bg-white/20 backdrop-blur-md text-white font-bold py-3 px-8 rounded-full hover:bg-white/30 transition-colors">
+        Get your own page
+      </a>
     </div>
   </div>
 </div>
+
+<script>
+  function shareProfile() {
+    const shareData = {
+      title: '@{{ user.username }} on mydiary.page',
+      text: 'Send me anonymous messages!',
+      url: window.location.href
+    };
+
+    // Check if native share is available (mobile)
+    if (navigator.share) {
+      navigator.share(shareData)
+        .catch((err) => console.log('Share cancelled'));
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard! 📋');
+      });
+    }
+  }
+</script>
 {% endblock %}

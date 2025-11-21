@@ -1,33 +1,122 @@
 {% extends "base.html" %}
+
+{% block title %}Admin Dashboard - mydiary.page{% endblock %}
+
 {% block content %}
-<section class="max-w-6xl mx-auto px-4 py-10">
-  <h2 class="text-3xl font-extrabold">Admin</h2>
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white rounded-lg p-4 shadow">
-      <h3 class="font-semibold">Recent users</h3>
-      <div class="mt-2 space-y-2">
-        {% for u in users %}
-        <div class="p-2 border rounded flex items-center justify-between">
-          <div>
-            <div class="font-semibold">@{{ u.username }}</div>
-            <div class="text-xs text-slate-500">{{ u.email }}</div>
-          </div>
-          <div class="text-sm text-slate-400">{{ u.created_at.strftime('%b %d') }}</div>
-        </div>
-        {% endfor %}
+<div class="min-h-screen bg-dark-black py-12">
+  <div class="container mx-auto px-4 md:px-6">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="font-display font-black text-5xl text-white mb-2">Admin Dashboard</h1>
+      <p class="text-gray-400 text-xl">Manage users, moderate content, and view analytics</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Total Users</h3>
+        <p class="font-display font-black text-4xl text-white">{{ users|length }}</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Total Messages</h3>
+        <p class="font-display font-black text-4xl text-vibrant-orange">{{ messages_count }}</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Flagged Messages</h3>
+        <p class="font-display font-black text-4xl text-red-400">{{ flagged_count }}</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Active Today</h3>
+        <p class="font-display font-black text-4xl text-teal-accent">--</p>
       </div>
     </div>
-    <div class="bg-white rounded-lg p-4 shadow">
-      <h3 class="font-semibold">Flagged messages</h3>
-      <div class="mt-2 space-y-2">
-        {% for m in flagged %}
-        <div class="p-2 border rounded">
-          <div class="text-xs text-slate-500">@{{ m.recipient.username }} — {{ m.created_at.strftime('%b %d') }}</div>
-          <div>{{ m.content }}</div>
-        </div>
-        {% endfor %}
+
+    <!-- Quick Actions -->
+    <div class="mb-8">
+      <h2 class="font-display font-bold text-2xl text-white mb-4">Quick Actions</h2>
+      <div class="flex flex-wrap gap-3">
+        <a href="{{ url_for('adminbp.flagged_messages') }}"
+          class="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-5 py-2.5 rounded-xl transition-colors">
+          View Flagged Messages ({{ flagged_count }})
+        </a>
+        <button onclick="exportData()"
+          class="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 font-bold px-5 py-2.5 rounded-xl transition-colors">
+          Export Data
+        </button>
+        <button onclick="sendAnnouncement()"
+          class="bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 font-bold px-5 py-2.5 rounded-xl transition-colors">
+          Send Announcement
+        </button>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="mb-8">
+      <h2 class="font-display font-bold text-2xl text-white mb-4">Recent Users</h2>
+      <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-white/5">
+            <tr class="text-left">
+              <th class="px-6 py-4 text-gray-400 font-bold text-sm uppercase">Username</th>
+              <th class="px-6 py-4 text-gray-400 font-bold text-sm uppercase hidden md:table-cell">Email</th>
+              <th class="px-6 py-4 text-gray-400 font-bold text-sm uppercase hidden md:table-cell">Joined</th>
+              <th class="px-6 py-4 text-gray-400 font-bold text-sm uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/10">
+            {% for user in users %}
+            <tr class="hover:bg-white/5 transition-colors">
+              <td class="px-6 py-4">
+                <a href="{{ url_for('diary.public_profile', username=user.username) }}" target="_blank"
+                  class="text-white font-bold hover:text-hot-pink">
+                  @{{ user.username }}
+                </a>
+              </td>
+              <td class="px-6 py-4 text-gray-400 hidden md:table-cell">{{ user.email }}</td>
+              <td class="px-6 py-4 text-gray-400 hidden md:table-cell">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2">
+                  <button onclick="viewUser({{ user.id }})"
+                    class="px-3 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm font-bold transition-colors">
+                    View
+                  </button>
+                  {% if user.id != 1 %}
+                  <button onclick="banUser({{ user.id }}, '{{ user.username }}')"
+                    class="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-sm font-bold transition-colors">
+                    Ban
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-</section>
+</div>
+
+<script>
+  function exportData() {
+    alert('Export functionality coming soon!');
+  }
+
+  function sendAnnouncement() {
+    const message = prompt('Enter announcement message:');
+    if (message) {
+      alert('Announcement sent: ' + message);
+    }
+  }
+
+  function viewUser(userId) {
+    alert('User details view coming soon for user ID: ' + userId);
+  }
+
+  function banUser(userId, username) {
+    if (confirm('Are you sure you want to ban @' + username + '?')) {
+      alert('Ban functionality coming soon!');
+    }
+  }
+</script>
 {% endblock %}

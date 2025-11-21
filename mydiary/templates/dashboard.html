@@ -1,46 +1,304 @@
 {% extends "base.html" %}
-{% block content %}
-<section class="max-w-4xl mx-auto px-4 py-10">
-  <h2 class="text-3xl font-extrabold">Dashboard</h2>
 
-  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <div class="bg-white rounded-lg p-4 shadow">
-        <h3 class="font-semibold">Inbox</h3>
-        <div class="mt-3 space-y-2">
-          {% for m in inbox %}
-            {% include "components/message_card.html" with context %}
-          {% endfor %}
-        </div>
+{% block title %}Dashboard - mydiary.page{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-dark-black py-12">
+  <div class="container mx-auto px-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
+      <div>
+        <h1 class="font-display font-black text-5xl text-white mb-2">hey, {{ current_user.username }}</h1>
+        <p class="text-gray-400 text-xl">Here is what your friends are saying.</p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="shareMyProfile()"
+          class="bg-white text-dark-black px-5 py-2.5 rounded-full font-bold hover:bg-gray-200 transition-colors flex items-center gap-2">
+          <span>📤</span> Share Link
+        </button>
+        <a href="{{ url_for('diary.public_profile', username=current_user.username) }}" target="_blank"
+          class="bg-gradient-to-r from-hot-pink to-vibrant-orange text-white px-5 py-2.5 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
+          View Profile
+        </a>
       </div>
     </div>
 
-    <div>
-      <div class="bg-white rounded-lg p-4 shadow">
-        <h3 class="font-semibold">Your diary</h3>
-        <form method="post" action="{{ url_for('diary.new_post', username=current_user.username) }}">
-          <input name="title" placeholder="Title" class="w-full border rounded p-2 mt-2" />
-          <textarea name="body" rows="4" placeholder="Write something..." class="w-full border rounded p-2 mt-2"></textarea>
-          <div class="flex items-center gap-3 mt-2">
-            <label class="flex items-center gap-2"><input type="checkbox" name="public" checked /> Public</label>
-            <button class="ml-auto px-4 py-2 rounded-full bg-gradient-to-r from-pink-500 to-orange-400 text-white">Post</button>
-          </div>
-        </form>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Total Messages</h3>
+        <p class="font-display font-black text-4xl text-white">{{ messages|length }}</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">Diary Entries</h3>
+        <p class="font-display font-black text-4xl text-vibrant-orange">{{ entries|length }}</p>
+      </div>
+      <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+        <h3 class="text-gray-400 font-bold uppercase text-xs mb-1">New Today</h3>
+        <p class="font-display font-black text-4xl text-hot-pink">0</p>
+      </div>
+    </div>
 
-        <div class="mt-4">
-          <h4 class="font-semibold">Recent posts</h4>
-          <div class="mt-2 space-y-2">
-            {% for e in entries %}
-            <div class="p-2 border rounded">
-              <div class="text-sm text-slate-500">{{ e.created_at.strftime('%b %d') }}</div>
-              <div class="font-semibold">{{ e.title }}</div>
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Messages & Diary -->
+      <div class="lg:col-span-2 space-y-8">
+        <!-- Inbox Section -->
+        <div>
+          <h2 class="font-display font-bold text-3xl text-white mb-4">Inbox</h2>
+
+          {% if messages %}
+          <div class="space-y-4" id="messages-container">
+            {% for message in messages %}
+            <div id="message-{{ message.id }}"
+              class="bg-white text-dark-black p-5 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300 relative group">
+              <div class="flex justify-between items-start mb-3">
+                <span
+                  class="bg-dark-black text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{{
+                  message.category }}</span>
+                <span class="text-gray-500 text-sm">{{ message.created_at.strftime('%b %d, %H:%M') }}</span>
+              </div>
+              <p class="font-display font-bold text-xl mb-4" id="message-text-{{ message.id }}">"{{ message.content }}"
+              </p>
+
+              <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="shareToStory({{ message.id }}, '{{ message.content|replace("'", "\\'") }}')"
+                  class="px-3 py-1.5 bg-purple-100 hover:bg-purple-200 rounded-lg text-sm font-bold transition-colors"
+                  title="Share to Story">
+                  Share to Story
+                </button>
+                <button hx-post="/message/{{ message.id }}/flag" hx-swap="innerHTML"
+                  hx-target="#flag-status-{{ message.id }}"
+                  class="px-3 py-1.5 bg-yellow-100 hover:bg-yellow-200 rounded-lg text-sm font-bold transition-colors"
+                  title="Report">
+                  {% if message.is_flagged %}Unflag{% else %}Report{% endif %}
+                </button>
+                <span id="flag-status-{{ message.id }}"></span>
+                <button hx-delete="/message/{{ message.id }}" hx-confirm="Delete this message?" hx-swap="outerHTML"
+                  hx-target="#message-{{ message.id }}"
+                  class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg text-sm font-bold transition-colors"
+                  title="Delete">
+                  Delete
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-10 text-center">
+            <div class="text-6xl mb-4">🦗</div>
+            <h3 class="font-display font-bold text-2xl text-white mb-2">It's quiet... too quiet.</h3>
+            <p class="text-gray-400">Share your link to start getting messages!</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Diary Entries Section -->
+        <div>
+          <h2 class="font-display font-bold text-3xl text-white mb-4">My Diary</h2>
+
+          <!-- New Entry Form -->
+          <div class="bg-white/5 border border-white/10 p-5 rounded-2xl mb-4">
+            <form hx-post="/diary/new" hx-swap="afterbegin" hx-target="#diary-entries"
+              hx-on::after-request="this.reset()" class="space-y-3">
+              <textarea name="content" required rows="3"
+                class="w-full bg-dark-black border border-gray-700 text-white rounded-xl p-3 text-base placeholder-gray-500 focus:outline-none focus:border-hot-pink resize-none"
+                placeholder="What's on your mind?"></textarea>
+              <div class="flex justify-between items-center">
+                <label class="flex items-center gap-2 text-gray-400 cursor-pointer">
+                  <input type="checkbox" name="is_public" value="true" class="rounded">
+                  <span class="text-sm">Make public</span>
+                </label>
+                <button type="submit"
+                  class="bg-gradient-to-r from-hot-pink to-vibrant-orange text-white font-bold px-5 py-2 rounded-full hover:scale-105 transition-transform">
+                  Post Entry
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Diary Entries List -->
+          <div id="diary-entries" class="space-y-4">
+            {% for entry in entries %}
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl" id="entry-{{ entry.id }}">
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-gray-400 text-sm">{{ entry.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-bold {% if entry.is_public %}bg-green-500/20 text-green-400{% else %}bg-gray-500/20 text-gray-400{% endif %}">
+                  {% if entry.is_public %}Public{% else %}Private{% endif %}
+                </span>
+              </div>
+              <p class="text-white text-lg mb-4">{{ entry.content }}</p>
+              <div class="flex gap-2">
+                <button hx-post="/diary/{{ entry.id }}/toggle-public" hx-swap="outerHTML"
+                  hx-target="#entry-{{ entry.id }}"
+                  class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm transition-colors text-white">
+                  {% if entry.is_public %}Make Private{% else %}Make Public{% endif %}
+                </button>
+                <button hx-delete="/diary/{{ entry.id }}" hx-confirm="Delete this entry?" hx-swap="outerHTML"
+                  hx-target="#entry-{{ entry.id }}"
+                  class="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl text-sm transition-colors">
+                  Delete
+                </button>
+              </div>
             </div>
             {% endfor %}
           </div>
         </div>
+      </div>
 
+      <!-- Right Sidebar -->
+      <div class="space-y-6">
+        <!-- Settings -->
+        <div class="bg-white/5 border border-white/10 p-5 rounded-2xl">
+          <h3 class="font-display font-bold text-lg text-white mb-4">Settings</h3>
+
+          <!-- Bio Update -->
+          <form hx-post="/settings/profile" hx-swap="innerHTML" hx-target="#profile-status" class="mb-4">
+            <label class="block text-sm font-bold text-gray-400 mb-2">Bio</label>
+            <textarea name="bio" maxlength="140" rows="2"
+              class="w-full bg-dark-black border border-gray-700 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-hot-pink resize-none"
+              placeholder="Tell people about yourself...">{{ current_user.bio or '' }}</textarea>
+            <div id="profile-status" class="mt-2"></div>
+            <button type="submit"
+              class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-2 rounded-xl transition-colors mt-2">
+              Update Bio
+            </button>
+          </form>
+
+          <!-- Theme Selector -->
+          <form hx-post="/settings/theme" hx-swap="innerHTML" hx-target="#theme-status">
+            <label class="block text-sm font-bold text-gray-400 mb-2">Theme</label>
+            <select name="theme"
+              class="w-full bg-dark-black border border-gray-700 text-white rounded-xl px-3 py-2 focus:outline-none focus:border-hot-pink mb-2">
+              <option value="default" {% if current_user.theme_preference=='default' %}selected{% endif %}>Default
+                (Dark)</option>
+              <option value="bubblegum" {% if current_user.theme_preference=='bubblegum' %}selected{% endif %}>Bubblegum
+              </option>
+              <option value="vaporwave" {% if current_user.theme_preference=='vaporwave' %}selected{% endif %}>Vaporwave
+              </option>
+              <option value="cyberpop" {% if current_user.theme_preference=='cyberpop' %}selected{% endif %}>Cyberpop
+              </option>
+              <option value="soft-girl" {% if current_user.theme_preference=='soft-girl' %}selected{% endif %}>Soft Girl
+              </option>
+            </select>
+            <div id="theme-status" class="mb-2"></div>
+            <button type="submit"
+              class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-2 rounded-xl transition-colors">
+              Save Theme
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</section>
+</div>
+
+<!-- Hidden canvas for generating story images -->
+<canvas id="story-canvas" width="1080" height="1920" style="display:none;"></canvas>
+
+<script>
+  function shareMyProfile() {
+    const shareData = {
+      title: 'My mydiary.page',
+      text: 'Send me anonymous messages on mydiary.page!',
+      url: "{{ url_for('diary.public_profile', username=current_user.username, _external=True) }}"
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch((err) => console.log('Share cancelled'));
+    } else {
+      navigator.clipboard.writeText(shareData.url).then(() => {
+        alert('Link copied to clipboard! 📋');
+      });
+    }
+  }
+
+  function shareToStory(messageId, messageText) {
+    // Create Instagram Story-style image
+    const canvas = document.getElementById('story-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+    gradient.addColorStop(0, '#FF1B6B');
+    gradient.addColorStop(1, '#FF6B35');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1080, 1920);
+
+    // Message box
+    ctx.fillStyle = 'white';
+    ctx.roundRect(100, 600, 880, 400, 30);
+    ctx.fill();
+
+    // Message text
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'bold 48px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Word wrap
+    const words = messageText.split(' ');
+    let line = '';
+    let y = 750;
+    const maxWidth = 800;
+
+    for (let word of words) {
+      const testLine = line + word + ' ';
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && line !== '') {
+        ctx.fillText(line, 540, y);
+        line = word + ' ';
+        y += 60;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, 540, y);
+
+    // Username
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText('@{{ current_user.username }}', 540, 1600);
+    ctx.fillText('mydiary.page', 540, 1660);
+
+    // Convert to blob and share
+    canvas.toBlob(function (blob) {
+      const file = new File([blob], 'story.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'Anonymous Message',
+          text: 'Check out this message I got!'
+        }).catch((err) => console.log('Share cancelled'));
+      } else {
+        // Fallback: download image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mydiary-story.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        alert('Image downloaded! Share it to your story manually.');
+      }
+    });
+  }
+
+  // Add roundRect polyfill for older browsers
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.beginPath();
+      this.moveTo(x + r, y);
+      this.arcTo(x + w, y, x + w, y + h, r);
+      this.arcTo(x + w, y + h, x, y + h, r);
+      this.arcTo(x, y + h, x, y, r);
+      this.arcTo(x, y, x + w, y, r);
+      this.closePath();
+      return this;
+    }
+  }
+</script>
 {% endblock %}

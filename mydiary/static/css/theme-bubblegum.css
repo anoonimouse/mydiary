@@ -1,0 +1,32 @@
+/* Bubblegum Theme - Extra Pink and Playful */
+:root {
+    --primary: #FF69B4;
+    --secondary: #FFB6C1;
+    --accent: #FF1493;
+    --bg-gradient-start: #FF69B4;
+    --bg-gradient-end: #FFB6C1;
+}
+
+.theme-bubblegum .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end), #FFC0CB);
+}
+
+.theme-bubblegum .from-hot-pink {
+    --tw-gradient-from: #FF69B4;
+}
+
+.theme-bubblegum .to-vibrant-orange {
+    --tw-gradient-to: #FFB6C1;
+}
+
+.theme-bubblegum .text-hot-pink {
+    color: #FF1493;
+}
+
+.theme-bubblegum .bg-hot-pink {
+    background-color: #FF69B4;
+}
+
+.theme-bubblegum .border-hot-pink {
+    border-color: #FF69B4;
+}

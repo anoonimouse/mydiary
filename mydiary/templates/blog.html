@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - mydiary.page{% endblock %}
+
+{% block content %}
+<div class="bg-white min-h-screen py-20 text-dark-black">
+    <div class="container mx-auto px-6">
+        <h1 class="font-display font-black text-6xl md:text-8xl mb-12 text-center">the blog ✍️</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- Article 1 -->
+            <article class="group cursor-pointer">
+                <div class="overflow-hidden rounded-3xl mb-6">
+                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Blog Post"
+                        class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-hot-pink text-white px-4 py-1 rounded-full font-bold text-sm">Lifestyle</span>
+                    <span class="text-gray-500">Nov 21, 2024</span>
+                </div>
+                <h2 class="font-display font-bold text-4xl mb-4 group-hover:text-hot-pink transition-colors">
+                    How to handle anonymous confessions like a pro
+                </h2>
+                <p class="text-gray-600 text-xl">
+                    Getting honest feedback can be scary. Here is how to navigate the wild world of anonymous messaging.
+                </p>
+            </article>
+
+            <!-- Article 2 -->
+            <article class="group cursor-pointer">
+                <div class="overflow-hidden rounded-3xl mb-6">
+                    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Blog Post"
+                        class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="bg-vibrant-orange text-white px-4 py-1 rounded-full font-bold text-sm">Updates</span>
+                    <span class="text-gray-500">Nov 20, 2024</span>
+                </div>
+                <h2 class="font-display font-bold text-4xl mb-4 group-hover:text-vibrant-orange transition-colors">
+                    New Feature Alert: 3 Words Challenge
+                </h2>
+                <p class="text-gray-600 text-xl">
+                    We just dropped a new game mode. Ask your friends to describe you in just 3 words.
+                </p>
+            </article>
+        </div>
+    </div>
+</div>
+{% endblock %}

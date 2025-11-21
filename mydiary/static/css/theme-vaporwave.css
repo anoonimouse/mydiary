@@ -1,0 +1,40 @@
+/* Vaporwave Theme - Purple and Cyan Aesthetics */
+:root {
+    --primary: #B24BF3;
+    --secondary: #00D9FF;
+    --accent: #FF71CE;
+    --bg-gradient-start: #B24BF3;
+    --bg-gradient-end: #00D9FF;
+}
+
+.theme-vaporwave .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end), #01CDFE);
+}
+
+.theme-vaporwave .from-hot-pink {
+    --tw-gradient-from: #B24BF3;
+}
+
+.theme-vaporwave .to-vibrant-orange {
+    --tw-gradient-to: #00D9FF;
+}
+
+.theme-vaporwave .text-hot-pink {
+    color: #FF71CE;
+}
+
+.theme-vaporwave .bg-hot-pink {
+    background-color: #B24BF3;
+}
+
+.theme-vaporwave .border-hot-pink {
+    border-color: #B24BF3;
+}
+
+.theme-vaporwave .text-vibrant-orange {
+    color: #00D9FF;
+}
+
+.theme-vaporwave .bg-vibrant-orange {
+    background-color: #00D9FF;
+}

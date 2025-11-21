@@ -1,14 +1,102 @@
-/* small custom overrides and funness */
-html,body { height:100%; }
-h1, h2, h3, h4, h5 { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
-.bg-emoji {
-  background-image: radial-gradient(circle at 10% 10%, rgba(255,105,180,0.06), transparent 10%),
-                    radial-gradient(circle at 90% 90%, rgba(255,165,0,0.05), transparent 10%);
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
 }
-/* tiny floating animation for decorative elements */
-.floaty { animation: floaty 6s ease-in-out infinite; }
-@keyframes floaty {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px) rotate(-1deg); }
-  100% { transform: translateY(0px); }
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #FF006B;
+}
+
+/* Text Gradients */
+.text-gradient {
+    background: linear-gradient(to right, #FF006B, #FF6B35);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Polaroid Effect */
+.polaroid {
+    background: white;
+    padding: 1rem;
+    padding-bottom: 3rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+}
+
+.polaroid:hover {
+    transform: rotate(0deg) scale(1.05);
+    z-index: 10;
+}
+
+.polaroid-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    background: #eee;
+}
+
+/* Speech Bubble */
+.speech-bubble {
+    position: relative;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    color: #000;
+}
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    width: 0;
+    height: 0;
+    border: 20px solid transparent;
+    border-top-color: #ffffff;
+    border-bottom: 0;
+    border-left: 0;
+    margin-left: -10px;
+    margin-bottom: -20px;
+}
+
+/* Utilities */
+.text-shadow-sm {
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+}
+
+.text-shadow-lg {
+    text-shadow: 4px 4px 0px rgba(0,0,0,1);
+}
+
+.box-shadow-retro {
+    box-shadow: 8px 8px 0px 0px #000000;
+}
+
+.box-shadow-retro-white {
+    box-shadow: 8px 8px 0px 0px #ffffff;
+}
+
+/* Animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float 6s ease-in-out 3s infinite;
 }

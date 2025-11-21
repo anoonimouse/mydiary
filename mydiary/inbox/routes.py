@@ -1,48 +1,73 @@
-from . import inbox_bp
-from flask import request, redirect, url_for, render_template, current_app, flash, jsonify, abort
-from ..models import User, AnonymousMessage
-from ..extensions import db
-from datetime import datetime, timedelta
-from flask import make_response
-import hashlib
-import time
+from flask import render_template, request, flash, redirect, url_for, abort
+from flask_login import login_required, current_user
+from mydiary.extensions import db
+from mydiary.inbox import bp
+from mydiary.models import User, Message
 
-def ip_hash(ip):
-    return hashlib.sha256(ip.encode("utf-8")).hexdigest()
-
-@inbox_bp.route("/<username>/send", methods=["POST"])
+@bp.route('/send/<username>', methods=['POST'])
 def send_message(username):
     user = User.query.filter_by(username=username).first_or_404()
-    content = request.form.get("content", "").strip()
-    category = request.form.get("category", "general")
+    content = request.form.get('content')
+    category = request.form.get('category', 'text')
+    
     if not content:
-        return ("", 400)
-    # basic rate limit by cookie timestamp
-    last = request.cookies.get(f"last_msg_{user.id}")
-    now = int(time.time())
-    rate_seconds = current_app.config.get("MESSAGE_RATE_LIMIT_SECONDS", 10)
-    if last and now - int(last) < rate_seconds:
-        return ("", 429)
-    m = AnonymousMessage(to_user_id=user.id, content=content, category=category)
-    # store hashed IP (if present) — basic privacy-first hash
-    ip = request.remote_addr or "0.0.0.0"
-    m.ip_hash = ip_hash(ip)
-    db.session.add(m)
-    db.session.commit()
-    resp = make_response(render_template("components/message_card.html", msg=m))
-    resp.set_cookie(f"last_msg_{user.id}", str(now), max_age=60*60*24)
-    return resp
+        return '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">Message cannot be empty!</div>'
 
-@inbox_bp.route("/messages/<int:msg_id>/toggle_read", methods=["POST"])
-def toggle_read(msg_id):
-    m = AnonymousMessage.query.get_or_404(msg_id)
-    m.is_read = not m.is_read
+    # Rate limiting could go here (check IP)
+    
+    msg = Message(
+        recipient_id=user.id,
+        content=content,
+        category=category,
+        sender_ip=request.remote_addr
+    )
+    db.session.add(msg)
     db.session.commit()
-    return ("", 204)
+    
+    return f'''
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-center">
+        <strong class="font-bold">Sent! 🚀</strong>
+        <span class="block sm:inline">Your anonymous message has been delivered.</span>
+        <button onclick="location.reload()" class="mt-2 bg-green-500 text-white font-bold py-1 px-3 rounded text-sm">Send Another</button>
+    </div>
+    '''
 
-@inbox_bp.route("/messages/<int:msg_id>/flag", methods=["POST"])
-def flag_message(msg_id):
-    m = AnonymousMessage.query.get_or_404(msg_id)
-    m.flagged = True
+@bp.route('/message/<int:message_id>/flag', methods=['POST'])
+@login_required
+def flag_message(message_id):
+    message = Message.query.get_or_404(message_id)
+    
+    if message.recipient_id != current_user.id:
+        abort(403)
+    
+    message.is_flagged = not message.is_flagged
     db.session.commit()
-    return ("", 204)
+    
+    status_text = '🚩 Flagged' if message.is_flagged else '✓ Unflagged'
+    return f'<div class="text-yellow-400 text-sm">{status_text}</div>'
+
+@bp.route('/message/<int:message_id>/read', methods=['POST'])
+@login_required
+def mark_read(message_id):
+    message = Message.query.get_or_404(message_id)
+    
+    if message.recipient_id != current_user.id:
+        abort(403)
+    
+    message.is_read = True
+    db.session.commit()
+    
+    return '', 200
+
+@bp.route('/message/<int:message_id>', methods=['DELETE'])
+@login_required
+def delete_message(message_id):
+    message = Message.query.get_or_404(message_id)
+    
+    if message.recipient_id != current_user.id:
+        abort(403)
+    
+    db.session.delete(message)
+    db.session.commit()
+    
+    return '', 200

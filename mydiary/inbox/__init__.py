@@ -1,2 +1,5 @@
 from flask import Blueprint
-inbox_bp = Blueprint("inbox", __name__, template_folder="../templates", static_folder="../static")
+
+bp = Blueprint('inbox', __name__)
+
+from mydiary.inbox import routes

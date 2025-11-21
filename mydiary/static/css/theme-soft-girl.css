@@ -1,0 +1,40 @@
+/* Soft Girl Theme - Pastel and Gentle */
+:root {
+    --primary: #FFB3BA;
+    --secondary: #BAFFC9;
+    --accent: #BAE1FF;
+    --bg-gradient-start: #FFB3BA;
+    --bg-gradient-end: #BAFFC9;
+}
+
+.theme-soft-girl .bg-gradient-to-br {
+    background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end), #BAE1FF);
+}
+
+.theme-soft-girl .from-hot-pink {
+    --tw-gradient-from: #FFB3BA;
+}
+
+.theme-soft-girl .to-vibrant-orange {
+    --tw-gradient-to: #FFDFBA;
+}
+
+.theme-soft-girl .text-hot-pink {
+    color: #FFB3BA;
+}
+
+.theme-soft-girl .bg-hot-pink {
+    background-color: #FFB3BA;
+}
+
+.theme-soft-girl .border-hot-pink {
+    border-color: #FFB3BA;
+}
+
+.theme-soft-girl .text-vibrant-orange {
+    color: #FFDFBA;
+}
+
+.theme-soft-girl .bg-vibrant-orange {
+    background-color: #FFDFBA;
+}

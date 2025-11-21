@@ -1,69 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>{% block title %}mydiary.page{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}mydiary.page{% endblock %}</title>
 
-  <!-- Tailwind (CDN for quick prototyping) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-  <!-- htmx -->
-  <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+    <!-- Theme CSS -->
+    {% if current_user.is_authenticated and current_user.theme_preference and current_user.theme_preference != 'default'
+    %}
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/theme-' + current_user.theme_preference + '.css') }}">
+    {% endif %}
 
-  <!-- Alpine.js for tiny interactive bits -->
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hot-pink': '#FF006B',
+                        'vibrant-orange': '#FF6B35',
+                        'coral': '#FF8450',
+                        'dark-black': '#000000',
+                        'off-white': '#FFFFFF',
+                        'teal-accent': '#00F0FF'
+                    },
+                    fontFamily: {
+                        'display': ['DM Sans', 'sans-serif'],
+                        'body': ['Manrope', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-  <!-- QR code lib -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <script src="{{ url_for('static', filename='js/scripts.js') }}" defer></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-  {% block head %}{% endblock %}
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
 </head>
-<body class="bg-gradient-to-b from-pink-50 to-orange-50 text-slate-900 antialiased">
-  <header class="sticky top-0 z-40 bg-opacity-60 backdrop-blur-md">
-    <nav class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="{{ url_for('main.home') }}" class="flex items-center gap-3">
-        <div class="font-black text-2xl tracking-tight">mydiary<span class="text-orange-500">.</span>page</div>
-      </a>
-      <div class="flex items-center gap-3">
-        {% if current_user.is_authenticated %}
-          <a href="{{ url_for('main.dashboard') }}" class="px-3 py-2 rounded-full bg-white/90 hover:scale-105 transition">Dashboard</a>
-          <a href="{{ url_for('auth.logout') }}" class="px-3 py-2">Logout</a>
-        {% else %}
-          <a href="{{ url_for('auth.login') }}" class="px-3 py-2 rounded-full bg-white/90 hover:scale-105 transition">Log in</a>
-        {% endif %}
-      </div>
-    </nav>
-  </header>
 
-  <main class="min-h-[80vh]">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="max-w-3xl mx-auto px-4 py-2">
-          {% for category, msg in messages %}
-            <div class="rounded-md p-3 my-2 text-sm {{ 'bg-green-100 text-green-800' if category=='success' else 'bg-red-100 text-red-800' }}">{{ msg }}</div>
-          {% endfor %}
+<body
+    class="{% if current_user.is_authenticated and current_user.theme_preference %}theme-{{ current_user.theme_preference }}{% endif %} bg-dark-black text-white font-body overflow-x-hidden selection:bg-hot-pink selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" x-data="{ scrolled: false }"
+        @scroll.window="scrolled = (window.pageYOffset > 20)"
+        :class="{ 'bg-dark-black/90 backdrop-blur-md py-2': scrolled, 'bg-transparent py-6': !scrolled }">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="{{ url_for('main.index') }}"
+                class="text-2xl font-display font-bold tracking-tighter hover:text-hot-pink transition-colors">
+                mydiary<span class="text-hot-pink">.page</span>
+            </a>
+
+            <div class="hidden md:flex items-center space-x-8 font-display font-semibold text-lg">
+                <a href="{{ url_for('main.about') }}" class="hover:text-vibrant-orange transition-colors">about</a>
+                <a href="{{ url_for('main.safety') }}" class="hover:text-vibrant-orange transition-colors">safety</a>
+                <a href="{{ url_for('main.blog') }}" class="hover:text-vibrant-orange transition-colors">blog</a>
+
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('diary.dashboard') }}"
+                    class="px-6 py-2 bg-white text-dark-black rounded-full hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(255,107,53,1)]">dashboard</a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" class="hover:text-vibrant-orange transition-colors">login</a>
+                <a href="{{ url_for('auth.register') }}"
+                    class="px-6 py-2 bg-gradient-to-r from-hot-pink to-vibrant-orange rounded-full hover:scale-105 transition-transform shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">get
+                    started</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
-      {% endif %}
-    {% endwith %}
+    </nav>
 
-    {% block content %}{% endblock %}
-  </main>
-
-  <footer class="mt-8 bg-white/80">
-    <div class="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
-      <div>
-        <strong>mydiary.page</strong> — real friends, real fun
-      </div>
-      <div class="flex gap-4 text-sm">
-        <a href="{{ url_for('main.home') }}">Home</a>
-        <a href="{{ url_for('main.home') }}#safety">Safety</a>
-        <a href="{{ url_for('main.home') }}#about">About</a>
-      </div>
+    <!-- Flash Messages -->
+    <div class="fixed top-24 right-6 z-50 space-y-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+            class="bg-white text-dark-black px-6 py-4 rounded-xl shadow-[8px_8px_0px_0px_rgba(255,0,107,1)] border-2 border-dark-black flex items-center gap-3 transform transition-all duration-500"
+            x-transition:enter="translate-x-full opacity-0" x-transition:enter-end="translate-x-0 opacity-100"
+            x-transition:leave="translate-x-full opacity-0">
+            <span class="text-2xl">
+                {% if category == 'error' %}🚫{% else %}✨{% endif %}
+            </span>
+            <p class="font-display font-bold">{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
-  </footer>
+
+    <!-- Main Content -->
+    <main class="min-h-screen pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-black py-20 border-t border-white/10 mt-20">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <h3 class="text-4xl font-display font-bold mb-6">mydiary<span class="text-hot-pink">.page</span>
+                    </h3>
+                    <p class="text-gray-400 text-lg max-w-md">
+                        The anonymous messaging diary for real friends and real fun.
+                        Send confessions, ask questions, and share your life.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-display font-bold text-xl mb-6 text-vibrant-orange">Links</h4>
+                    <ul class="space-y-4 text-gray-300">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Safety Center</a></li>
+                        <li><a href="#" class="hover:text-white">Community Guidelines</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-display font-bold text-xl mb-6 text-teal-accent">Get the App</h4>
+                    <div class="space-y-4">
+                        <button
+                            class="w-full bg-white/10 hover:bg-white/20 py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-colors">
+                            <span>🍎</span> App Store
+                        </button>
+                        <button
+                            class="w-full bg-white/10 hover:bg-white/20 py-3 px-6 rounded-xl flex items-center justify-center gap-3 transition-colors">
+                            <span>🤖</span> Google Play
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-20 pt-8 border-t border-white/10 text-center text-gray-500">
+                <p>&copy; 2024 mydiary.page. All rights reserved. Made with 💖 by Udit.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
 </body>
+
 </html>

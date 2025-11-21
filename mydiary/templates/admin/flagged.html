@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Flagged Messages - Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-dark-black py-12">
+    <div class="container mx-auto px-4 md:px-6">
+        <div class="mb-8">
+            <h1 class="font-display font-black text-4xl md:text-5xl text-white mb-2">Flagged Messages 🚩</h1>
+            <p class="text-gray-400 text-lg">Review and moderate flagged content</p>
+        </div>
+
+        <div class="mb-6">
+            <a href="{{ url_for('adminbp.index') }}"
+                class="inline-block bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2 rounded-xl transition-colors">
+                ← Back to Dashboard
+            </a>
+        </div>
+
+        {% if messages %}
+        <div class="space-y-4">
+            {% for message in messages %}
+            <div class="bg-white/5 border border-red-500/50 p-4 md:p-6 rounded-2xl">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 mb-3">
+                    <div>
+                        <span
+                            class="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-bold uppercase mr-2">
+                            Flagged
+                        </span>
+                        <span class="bg-dark-black text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
+                            {{ message.category }}
+                        </span>
+                    </div>
+                    <span class="text-gray-400 text-sm">{{ message.created_at.strftime('%b %d, %Y %H:%M') }}</span>
+                </div>
+
+                <p class="text-white text-lg mb-4">"{{ message.content }}"</p>
+
+                <div class="flex flex-col sm:flex-row gap-3 text-sm text-gray-400">
+                    <span>To: <span class="text-white">{{ message.recipient.username }}</span></span>
+                    <span>From IP: <span class="text-white">{{ message.sender_ip }}</span></span>
+                </div>
+
+                <div class="mt-4 flex gap-3">
+                    <form method="POST" action="{{ url_for('adminbp.delete_message_admin', message_id=message.id) }}"
+                        onsubmit="return confirm('Delete this message?')">
+                        <button type="submit"
+                            class="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-4 py-2 rounded-xl transition-colors">
+                            Delete Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-12 text-center">
+            <div class="text-6xl mb-4">✅</div>
+            <h3 class="font-display font-bold text-2xl text-white mb-2">All clear!</h3>
+            <p class="text-gray-400">No flagged messages to review.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

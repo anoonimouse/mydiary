@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section
+    class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-hot-pink via-vibrant-orange to-coral">
+    <!-- Floating Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-20 left-10 text-8xl animate-float opacity-80">🍇</div>
+        <div class="absolute bottom-40 right-20 text-8xl animate-float-delayed opacity-80">🧸</div>
+        <div class="absolute top-1/3 right-1/4 text-6xl animate-float opacity-60 blur-sm">👋</div>
+
+        <!-- Polaroids -->
+        <div
+            class="absolute top-32 right-10 md:right-32 transform rotate-6 hover:rotate-0 transition-transform duration-500 z-10 hidden md:block">
+            <div class="bg-white p-4 pb-12 shadow-2xl transform rotate-3 w-64">
+                <div class="bg-gray-200 w-full h-48 bg-cover bg-center"
+                    style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')">
+                </div>
+                <p class="font-display text-dark-black text-xl mt-4 text-center rotate-[-2deg]">besties 4ever 💖</p>
+            </div>
+        </div>
+
+        <div
+            class="absolute bottom-20 left-10 md:left-32 transform -rotate-6 hover:rotate-0 transition-transform duration-500 z-10 hidden md:block">
+            <div class="bg-white p-4 pb-12 shadow-2xl transform -rotate-3 w-64">
+                <div class="bg-gray-200 w-full h-48 bg-cover bg-center"
+                    style="background-image: url('https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60')">
+                </div>
+                <p class="font-display text-dark-black text-xl mt-4 text-center rotate-[2deg]">road trip!! 🚗</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 relative z-20 text-center">
+        <h1
+            class="font-display font-black text-8xl md:text-[10rem] leading-none tracking-tighter text-white drop-shadow-xl mb-8 transform hover:scale-105 transition-transform duration-500">
+            real<br>friends<br>real fun
+        </h1>
+        <p class="font-body text-2xl md:text-3xl text-white/90 font-bold mb-12 max-w-2xl mx-auto">
+            The anonymous diary for your friend group. Send confessions, ask questions, and be honest.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+            <a href="{{ url_for('auth.register') }}" class="group relative inline-block">
+                <span
+                    class="absolute inset-0 translate-x-2 translate-y-2 bg-dark-black rounded-full transition-transform group-hover:translate-x-3 group-hover:translate-y-3"></span>
+                <span
+                    class="relative inline-block px-12 py-4 bg-white border-4 border-dark-black rounded-full text-2xl font-display font-bold text-dark-black group-hover:-translate-y-1 transition-transform">
+                    Get Started
+                </span>
+            </a>
+            <a href="#how-it-works"
+                class="text-white font-bold text-xl hover:underline decoration-4 underline-offset-4">
+                How it works?
+            </a>
+        </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-white text-4xl">
+        ⬇️
+    </div>
+</section>
+
+<!-- Ticker Section -->
+<div class="bg-dark-black border-y-4 border-white py-6 overflow-hidden whitespace-nowrap relative">
+    <div class="inline-block animate-marquee">
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• send me your
+            confessions</span>
+        <span class="text-4xl font-display font-bold text-hot-pink px-8">• ask me anything</span>
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• not gonna lie</span>
+        <span class="text-4xl font-display font-bold text-vibrant-orange px-8">• never have i ever</span>
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• describe me in 3 words</span>
+        <span class="text-4xl font-display font-bold text-teal-accent px-8">• tell me your crush</span>
+    </div>
+    <div class="inline-block animate-marquee" aria-hidden="true">
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• send me your
+            confessions</span>
+        <span class="text-4xl font-display font-bold text-hot-pink px-8">• ask me anything</span>
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• not gonna lie</span>
+        <span class="text-4xl font-display font-bold text-vibrant-orange px-8">• never have i ever</span>
+        <span class="text-4xl font-display font-bold text-transparent text-stroke px-8">• describe me in 3 words</span>
+        <span class="text-4xl font-display font-bold text-teal-accent px-8">• tell me your crush</span>
+    </div>
+</div>
+
+<style>
+    .text-stroke {
+        -webkit-text-stroke: 2px white;
+    }
+
+    @keyframes marquee {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    .animate-marquee {
+        animation: marquee 20s linear infinite;
+    }
+</style>
+
+<!-- Q&A Games Section -->
+<section id="how-it-works" class="py-32 bg-dark-black relative overflow-hidden">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-20">
+            <h2 class="font-display font-black text-6xl md:text-8xl text-white mb-6">play q&a games</h2>
+            <p class="text-2xl text-gray-400">Choose a prompt and let your friends answer anonymously.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            <!-- Card 1 -->
+            <div
+                class="bg-gradient-to-br from-hot-pink to-purple-600 p-1 rounded-3xl transform hover:-translate-y-4 transition-transform duration-300">
+                <div class="bg-dark-black h-full rounded-[1.4rem] p-8 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">🤫</div>
+                    <h3 class="font-display font-bold text-3xl text-white mb-4">Confessions</h3>
+                    <p class="text-gray-300 text-lg mb-8">"I actually stole your hoodie..."</p>
+                    <div class="mt-auto w-full bg-white/10 rounded-xl p-4">
+                        <p class="font-mono text-sm text-hot-pink">anonymous</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div
+                class="bg-gradient-to-br from-vibrant-orange to-yellow-400 p-1 rounded-3xl transform hover:-translate-y-4 transition-transform duration-300 md:-mt-12">
+                <div class="bg-dark-black h-full rounded-[1.4rem] p-8 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">🔥</div>
+                    <h3 class="font-display font-bold text-3xl text-white mb-4">Roasts</h3>
+                    <p class="text-gray-300 text-lg mb-8">"Your taste in music is questionable at best."</p>
+                    <div class="mt-auto w-full bg-white/10 rounded-xl p-4">
+                        <p class="font-mono text-sm text-vibrant-orange">anonymous</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div
+                class="bg-gradient-to-br from-teal-accent to-blue-500 p-1 rounded-3xl transform hover:-translate-y-4 transition-transform duration-300">
+                <div class="bg-dark-black h-full rounded-[1.4rem] p-8 flex flex-col items-center text-center">
+                    <div class="text-6xl mb-6">🦄</div>
+                    <h3 class="font-display font-bold text-3xl text-white mb-4">3 Words</h3>
+                    <p class="text-gray-300 text-lg mb-8">"Funny, chaotic, loyal"</p>
+                    <div class="mt-auto w-full bg-white/10 rounded-xl p-4">
+                        <p class="font-mono text-sm text-teal-accent">anonymous</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Flood Your Inbox Section -->
+<section class="py-32 bg-gradient-to-r from-vibrant-orange to-coral text-center">
+    <div class="container mx-auto px-6">
+        <h2 class="font-display font-black text-7xl md:text-9xl text-white mb-12 transform -rotate-2">
+            flood your<br>inbox 📬
+        </h2>
+        <div class="max-w-4xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-2xl transform rotate-1">
+            <div class="flex flex-col gap-4">
+                <div class="bg-gray-100 p-4 rounded-xl flex items-center gap-4 animate-pulse">
+                    <div class="w-12 h-12 bg-hot-pink rounded-full flex items-center justify-center text-2xl">💌</div>
+                    <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-xl flex items-center gap-4 animate-pulse delay-100">
+                    <div class="w-12 h-12 bg-teal-accent rounded-full flex items-center justify-center text-2xl">💬
+                    </div>
+                    <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-xl flex items-center gap-4 animate-pulse delay-200">
+                    <div class="w-12 h-12 bg-vibrant-orange rounded-full flex items-center justify-center text-2xl">🔥
+                    </div>
+                    <div class="h-4 bg-gray-300 rounded w-2/3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Join The Fun -->
+<section class="py-32 bg-dark-black text-center relative overflow-hidden">
+    <div
+        class="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiMzMzMiLz48L3N2Zz4=')] opacity-20">
+    </div>
+
+    <div class="container mx-auto px-6 relative z-10">
+        <h2 class="font-display font-black text-6xl md:text-8xl text-white mb-12">join the fun</h2>
+
+        <div class="flex flex-col items-center gap-8">
+            <a href="{{ url_for('auth.register') }}" class="group relative inline-block">
+                <span
+                    class="absolute inset-0 translate-x-2 translate-y-2 bg-hot-pink rounded-full transition-transform group-hover:translate-x-3 group-hover:translate-y-3"></span>
+                <span
+                    class="relative inline-block px-16 py-6 bg-white border-4 border-hot-pink rounded-full text-3xl font-display font-bold text-hot-pink group-hover:-translate-y-1 transition-transform">
+                    Create My Page
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
