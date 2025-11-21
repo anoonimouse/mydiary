@@ -7,8 +7,8 @@ Flask-Admin>=1.6
 python-dotenv>=1.0
 email-validator>=2.1
 bcrypt>=4.0
+
 qrcode[pil]>=7.4
 pillow>=10.0
 gunicorn>=21.2
 psycopg2-binary>=2.9
-
